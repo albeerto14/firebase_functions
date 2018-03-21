@@ -39,9 +39,24 @@ exports.makeUppercase2 = functions.database
         return admin.database().ref('/other')
             .orderByChild('id').equalTo(event.params.pushId)
             .on("child_added", snapshot => {
-                return snapshot.ref.update({ 
+                return snapshot.ref.update({
                     dinero: (snapshot.val().dinero + event.data.val()),
-                    comida: "manzana" 
+                    comida: "manzana"
+                });
+
+            });
+    });
+
+
+exports.updateScore = functions.database.ref('/Programas/{gala}/PuntuacionesCantantes/{cantante}')
+    .onWrite(event => {
+        console.log(event.params.cantante);
+        return admin.database().ref('/Espectadores')
+            .orderByChild('cantante1').equalTo(event.params.cantante)
+            .on("child_added", snapshot => {
+                console.log(snapshot.val().correo);
+                return snapshot.ref.update({
+                    puntuacion: (snapshot.val().puntuacion + event.data.val())
                 });
             });
     });
