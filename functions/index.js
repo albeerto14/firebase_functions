@@ -60,3 +60,14 @@ exports.updateScore = functions.database.ref('/Programas/{gala}/PuntuacionesCant
                 });
             });
     });
+
+    exports.updateScoreSinger = functions.database.ref('/Programas/{gala}/PuntuacionesCantantes/{cantante}')
+    .onWrite(event => {
+        console.log(event.params.cantante);
+        return admin.database().ref('/Cantantes/' + event.params.cantante)
+            .on("value", snapshot => {
+                return snapshot.ref.update({
+                    puntuacionTotal: (snapshot.val().puntuacionTotal + event.data.val())
+                });
+            });
+    });
