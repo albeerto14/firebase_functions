@@ -36,10 +36,12 @@ exports.makeUppercase = functions.database.ref('/messages/{pushId}/original')
 exports.makeUppercase2 = functions.database
     .ref('/messages/{pushId}/original2')
     .onWrite(event => {
-      return admin.database().ref('/other')
-        .orderByChild('id').equalTo(event.params.pushId)
-        .on("child_added", function(snapshot) {
-            console.log(snapshot);
-            snapshot.ref.update({comida:"pizza"});
-          });
+        return admin.database().ref('/other')
+            .orderByChild('id').equalTo(event.params.pushId)
+            .on("child_added", snapshot => {
+                return snapshot.ref.update({ 
+                    dinero: (snapshot.val().dinero + event.data.val()),
+                    comida: "manzana" 
+                });
+            });
     });
