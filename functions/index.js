@@ -5,21 +5,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
-exports.helloWorld = functions.https.onRequest((request, response) => {
-    response.send("Hello ");
-});
-
-/*admin.initializeApp({
-    credential: admin.credential.refreshToken(refreshToken),
-    apiKey: "AIzaSyBuCthX0RXuTeaqw1B39CzV7NCT0dkHZy4",
-    authDomain: "practica2firebase.firebaseapp.com",
-    databaseURL: "https://practica2firebase.firebaseio.com",
-    projectId: "practica2firebase",
-    storageBucket: "practica2firebase.appspot.com",
-    messagingSenderId: "728334178949"
-});*/
-
-exports.makeUppercase = functions.database.ref('/messages/{pushId}/original')
+/*exports.makeUppercase = functions.database.ref('/messages/{pushId}/original')
     .onWrite(event => {
         //var rootRef = admin.database.ref('espectadores');
         //console.log(rootRef);
@@ -45,10 +31,10 @@ exports.makeUppercase2 = functions.database
                 });
 
             });
-    });
+    });*/
 
 
-exports.updateScore = functions.database.ref('/Programas/{gala}/PuntuacionesCantantes/{cantante}')
+exports.updateScoreSpectator = functions.database.ref('/Programas/{gala}/PuntuacionesCantantes/{cantante}')
     .onWrite(event => {
         console.log(event.params.cantante);
         return admin.database().ref('/Espectadores')
@@ -61,11 +47,24 @@ exports.updateScore = functions.database.ref('/Programas/{gala}/PuntuacionesCant
             });
     });
 
-    exports.updateScoreSinger = functions.database.ref('/Programas/{gala}/PuntuacionesCantantes/{cantante}')
+exports.updateScoreSinger = functions.database.ref('/Programas/{gala}/PuntuacionesCantantes/{cantante}')
     .onWrite(event => {
         console.log(event.params.cantante);
         return admin.database().ref('/Cantantes/' + event.params.cantante)
             .on("value", snapshot => {
+                console.log("1");
+                return snapshot.ref.update({
+                    puntuacionTotal: (snapshot.val().puntuacionTotal + event.data.val())
+                });
+            });
+    });
+
+exports.updateScorePair = functions.database.ref('/Programas/{gala}/PuntuacionDueto/{cantante}')
+    .onWrite(event => {
+        console.log(event.params.cantante);
+        return admin.database().ref('/Cantantes/' + event.params.cantante)
+            .on("value", snapshot => {
+                console.log("2");
                 return snapshot.ref.update({
                     puntuacionTotal: (snapshot.val().puntuacionTotal + event.data.val())
                 });
