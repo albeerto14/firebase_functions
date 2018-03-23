@@ -36,7 +36,7 @@ exports.updateScoreSinger = functions.database.ref('/Programas/{gala}/Puntuacion
                 });
             });
     });
-
+/*
 exports.updateScorePair = functions.database.ref('/Programas/{gala}/PuntuacionDueto/{cantante}')
     .onWrite(event => {
         console.log(event.params.cantante);
@@ -44,6 +44,19 @@ exports.updateScorePair = functions.database.ref('/Programas/{gala}/PuntuacionDu
             .on("value", snapshot => {
                 return snapshot.ref.update({
                     puntuacionTotal: (snapshot.val().puntuacionTotal + event.data.val())
+                });
+            });
+    });
+*/
+
+exports.updateScorePair = functions.database.ref('/Programas/{gala}/PuntuacionesDuetos/{idDueto}/Total')
+    .onWrite(event => {
+        console.log(event.params.cantante);
+        return admin.database().ref('/Espectadores')
+            .orderByChild('dueto').equalTo(event.params.idDueto)
+            .on("child_added", snapshot => {
+                return snapshot.ref.update({
+                    puntuacionDueto: (snapshot.val().puntuacionDueto + event.data.val())
                 });
             });
     });
