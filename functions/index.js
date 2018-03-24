@@ -1,6 +1,5 @@
-//Get data from root: event.data.ref.root
+//Functions for OT Firebase
 
-// The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
@@ -28,7 +27,6 @@ exports.updateScoreSpectator = functions.database.ref('/Programas/{gala}/Puntuac
 
 exports.updateScoreSinger = functions.database.ref('/Programas/{gala}/PuntuacionesCantantes/{cantante}')
     .onWrite(event => {
-        console.log(event.params.cantante);
         return admin.database().ref('/Cantantes/' + event.params.cantante)
             .on("value", snapshot => {
                 return snapshot.ref.update({
@@ -36,22 +34,9 @@ exports.updateScoreSinger = functions.database.ref('/Programas/{gala}/Puntuacion
                 });
             });
     });
-/*
-exports.updateScorePair = functions.database.ref('/Programas/{gala}/PuntuacionDueto/{cantante}')
-    .onWrite(event => {
-        console.log(event.params.cantante);
-        return admin.database().ref('/Cantantes/' + event.params.cantante)
-            .on("value", snapshot => {
-                return snapshot.ref.update({
-                    puntuacionTotal: (snapshot.val().puntuacionTotal + event.data.val())
-                });
-            });
-    });
-*/
 
 exports.updateScorePair = functions.database.ref('/Programas/{gala}/PuntuacionesDuetos/{idDueto}/Total')
     .onWrite(event => {
-        console.log(event.params.cantante);
         return admin.database().ref('/Espectadores')
             .orderByChild('dueto').equalTo(event.params.idDueto)
             .on("child_added", snapshot => {
@@ -68,12 +53,11 @@ exports.updateRanking = functions.https.onRequest((req, res) => {
         on("value", snapshot => {
             contador = (snapshot.numChildren() + 1);
         });
-    return admin.database().ref('/Espectadores').orderByChild('puntuacion').on("child_added", snapshot => {
-        console.log(snapshot.val());
-        contador--;
-        return snapshot.ref.update({
-            posicionRanking: contador
+    return admin.database().ref('/Espectadores').orderByChild('puntuacion')
+        .on("child_added", snapshot => {
+            contador--;
+            return snapshot.ref.update({
+                posicionRanking: contador
+            });
         });
     });
-    // res.send('prueba');
-});
