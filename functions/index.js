@@ -60,3 +60,20 @@ exports.updateScorePair = functions.database.ref('/Programas/{gala}/Puntuaciones
                 });
             });
     });
+
+
+exports.updateRanking = functions.https.onRequest((req, res) => {
+    var contador = 0;
+    admin.database().ref('/Espectadores').
+        on("value", snapshot => {
+            contador = (snapshot.numChildren() + 1);
+        });
+    return admin.database().ref('/Espectadores').orderByChild('puntuacion').on("child_added", snapshot => {
+        console.log(snapshot.val());
+        contador--;
+        return snapshot.ref.update({
+            posicionRanking: contador
+        });
+    });
+    // res.send('prueba');
+});
