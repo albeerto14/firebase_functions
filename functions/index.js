@@ -51,13 +51,13 @@ exports.updateRanking = functions.https.onRequest((req, res) => {
     var contador = 0;
     admin.database().ref('/Espectadores').
         on("value", snapshot => {
-            contador = (snapshot.numChildren() + 1);
+            contador = (snapshot.numChildren());
         });
-    return admin.database().ref('/Espectadores').orderByChild('puntuacion')
-        .on("child_added", snapshot => {
-            contador--;
-            return snapshot.ref.update({
-                posicionRanking: contador
-            });
-        });
+
+    admin.database().ref('/Espectadores').orderByChild('puntuacion').on("child_added", snapshot => {
+        var json = {};
+        json[contador] = snapshot.val().email;
+        contador--;
+        return snapshot.ref.parent.parent.child("Ranking").update(json);
     });
+});
