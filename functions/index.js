@@ -7,11 +7,9 @@ admin.initializeApp(functions.config().firebase);
 
 exports.updateScoreSpectator2 = functions.database.ref('/Programas/{gala}/PuntuacionesCantantes/{cantante}')
     .onWrite(event => {
-        console.log(event.params.cantante);
         admin.database().ref('/Espectadores')
             .orderByChild('cantante1').equalTo(event.params.cantante)
             .on("child_added", snapshot => {
-                console.log(snapshot.val().correo);
                 return snapshot.ref.update({
                     puntuacion: (parseInt(snapshot.val().puntuacion) + parseInt(event.data.val()))
                 });
@@ -19,7 +17,6 @@ exports.updateScoreSpectator2 = functions.database.ref('/Programas/{gala}/Puntua
         return admin.database().ref('/Espectadores')
             .orderByChild('cantante2').equalTo(event.params.cantante)
             .on("child_added", snapshot => {
-                console.log(snapshot.val().correo);
                 return snapshot.ref.update({
                     puntuacion: (parseInt(snapshot.val().puntuacion) + parseInt(event.data.val()))
                 });
